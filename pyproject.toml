@@ -38,6 +38,6 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/martincrx/nestingcenter-svg"
-Repository = "https://github.com/martincrx/nestingcenter-svg"
-Issues = "https://github.com/martincrx/nestingcenter-svg/issues"
+Homepage = "https://github.com/DieSwartKat/NestingCenterSVGCreator"
+Repository = "https://github.com/DieSwartKat/NestingCenterSVGCreator"
+Issues = "https://github.com/DieSwartKat/NestingCenterSVGCreator/issues"

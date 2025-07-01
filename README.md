@@ -137,8 +137,8 @@ NURBS (Non-Uniform Rational B-Spline) curves with control points and knot vector
 ## Installation from Source
 
 ```bash
-git clone https://github.com/martincrx/nestingcenter-svg.git
-cd nestingcenter-svg
+git clone https://github.com/DieSwartKat/NestingCenterSVGCreator.git
+cd NestingCenterSVGCreator
 pip install -e .
 ```
 
@@ -147,43 +147,70 @@ pip install -e .
 To set up for development:
 
 ```bash
-git clone https://github.com/martincrx/nestingcenter-svg.git
-cd nestingcenter-svg
+git clone https://github.com/DieSwartKat/NestingCenterSVGCreator.git
+cd NestingCenterSVGCreator
 pip install -e .[dev]
 ```
 
-Run tests:
+### Development Tools
+
+The project includes several development tools to maintain code quality:
+
+**Testing:**
 ```bash
-pytest
+pytest                    # Run all tests
+pytest -v                 # Run tests with verbose output
+pytest --cov=nestingcenter_svg  # Run tests with coverage report
 ```
 
-Format code:
+**Code Formatting:**
 ```bash
-black .
+black .                   # Auto-format Python code to PEP 8 style
+                         # Black is an opinionated code formatter that ensures consistent style
 ```
 
-Check code style:
+**Code Quality Checks:**
 ```bash
-flake8
+flake8                    # Check for style violations, unused imports, and potential errors
+                         # Reports issues like long lines, unused variables, etc.
 ```
 
-Type checking:
+**Type Checking:**
 ```bash
-mypy nestingcenter_svg
+mypy nestingcenter_svg    # Static type checking to catch type-related errors
+                         # Validates type hints and catches potential runtime errors
 ```
 
-## Building the Package
+### Development Tool Explanations
+
+- **pytest**: Testing framework that runs your unit tests and reports results
+- **black**: Code formatter that automatically formats your Python code to follow PEP 8 style guidelines consistently
+- **flake8**: Linter that checks for programming errors, styling issues, and complexity problems
+- **mypy**: Static type checker that analyzes your type hints to catch potential bugs before runtime
+
+## Building and Publishing the Package
 
 ```bash
 # Install build tools
 pip install build twine
 
-# Build the package
+# Build the package (creates files in dist/ folder)
 python -m build
 
-# Upload to PyPI (requires account and authentication)
-python -m twine upload dist/*
+# Check the built package for common issues
+twine check dist/*
+
+# Upload to PyPI (requires PyPI account and authentication)
+twine upload dist/*
+
+# For testing, upload to TestPyPI first
+twine upload --repository testpypi dist/*
 ```
+
+### Publishing Tool Explanations
+
+- **build**: Creates distributable packages (wheel and source distribution) in the `dist/` folder
+- **twine**: Securely uploads your package to PyPI (Python Package Index) so others can install it with `pip install`
 
 ## Error Handling
 
@@ -203,15 +230,23 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Make your changes and add tests
+4. Run the development tools to ensure code quality:
+   ```bash
+   black .              # Format code
+   flake8              # Check for issues
+   mypy nestingcenter_svg  # Type check
+   pytest              # Run tests
+   ```
+5. Commit your changes (`git commit -m 'Add some amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
 ## Author
 
 **Martin Cronje**
 - Email: martin.cronje.home@gmail.com
-- GitHub: [@martincrx](https://github.com/martincrx)
+- GitHub: [@DieSwartKat](https://github.com/DieSwartKat)
 
 ## Changelog
 

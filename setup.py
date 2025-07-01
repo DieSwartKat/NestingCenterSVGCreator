@@ -17,7 +17,7 @@ setup(
     description="A Python library for converting Nesting Center data to SVG format",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/martincrx/nestingcenter-svg",
+    url="https://github.com/DieSwartKat/NestingCenterSVGCreator",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
