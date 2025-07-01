@@ -150,6 +150,9 @@ test_*.py
 *_test.py
 tests/
 test/
+json_data.json
+test_real_data.py
+part_*.svg
 
 # Example/demo files
 examples/
