@@ -11,12 +11,13 @@ class NestingCenterSVGCreator:
     """Create SVG from Nesting Center data."""
 
     @staticmethod
-    def createSvgPart(part: Dict[str, Any], geometryInvalid: Optional[List[Dict[str, Any]]] = None) -> str:
+    def createSvgPart(part: Dict[str, Any], geometryInvalid: Optional[List[Dict[str, Any]]] = None, stroke_width: float = 1.0) -> str:
         """Convert a part data into svg part.
         
         Args:
             part: Part data dictionary containing Box, Contours, etc.
             geometryInvalid: Optional list of invalid geometry curves to highlight in red
+            stroke_width: Line thickness for the SVG strokes (default: 1.0)
             
         Returns:
             Complete SVG string
@@ -26,7 +27,7 @@ class NestingCenterSVGCreator:
         vbWidth = math.ceil(part['Box']['X2']) - x1 + 2
         vbHeight = math.ceil(part['Box']['Y2']) - y1 + 2
         
-        svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x1} {y1} {vbWidth} {vbHeight}" transform="scale(1 -1)" style="stroke:black;fill:none">'
+        svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x1} {y1} {vbWidth} {vbHeight}" transform="scale(1 -1)" style="stroke:black;fill:none;stroke-width:{stroke_width}">'
 
         if part.get("RectangularShape") is not None:
             svg += NestingCenterSVGCreator.getSvgRectangle(part, False)
