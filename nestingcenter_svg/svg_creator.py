@@ -11,7 +11,10 @@ class NestingCenterSVGCreator:
     """Create SVG from Nesting Center data."""
 
     @staticmethod
-    def createSvgPart(part: Dict[str, Any], geometryInvalid: Optional[List[Dict[str, Any]]] = None, stroke_width: float = 1.0) -> str:
+    def createSvgPart(
+        part: Dict[str, Any], 
+        geometryInvalid: Optional[List[Dict[str, Any]]] = None, 
+        stroke_width: float = 1.0) -> str:
         """Convert a part data into svg part.
         
         Args:
