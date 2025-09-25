@@ -25,13 +25,15 @@ class NestingCenterSVGCreator:
         Returns:
             Complete SVG string
         """
+        # Determine viewBox from part Box or invalid geometry
         box = part.get("Box", None)
         if box is not None:
-            x1 = math.floor(part['Box']['X1']) - 1
-            y1 = math.floor(part['Box']['Y1']) - 1
-            vbWidth = math.ceil(part['Box']['X2']) - x1 + 2
-            vbHeight = math.ceil(part['Box']['Y2']) - y1 + 2
+            x1 = math.floor(box['X1']) - 1
+            y1 = math.floor(box['Y1']) - 1
+            vbWidth = math.ceil(box['X2']) - x1 + 2
+            vbHeight = math.ceil(box['Y2']) - y1 + 2
         elif geometryInvalid and len(geometryInvalid) > 0:
+            # Calculate bounding box from invalid geometry
             all_points = []
             for curve in geometryInvalid:
                 if 'Data' in curve and 'ControlPoints' in curve['Data']:
@@ -51,21 +53,26 @@ class NestingCenterSVGCreator:
             else:
                 x1, y1, vbWidth, vbHeight = 0, 0, 100, 100
         else:
-            raise Exception("Part must have a Box or invalid geometry to determine SVG viewBox.")
+            # Default viewBox if no data available
+            x1, y1, vbWidth, vbHeight = 0, 0, 100, 100
         
         svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x1} {y1} {vbWidth} {vbHeight}" transform="scale(1 -1)" style="stroke:black;fill:none;stroke-width:{stroke_width}">'
 
+        # Process rectangular shapes
         if part.get("RectangularShape") is not None:
             svg += NestingCenterSVGCreator.getSvgRectangle(part, False)
-        else:
-            for contour in part["Contours"]:
-                path_data = NestingCenterSVGCreator.getSvgContour(contour, True)
-                svg += f"<path d='{path_data}'/>"
+        
+        # Process contours if they exist
+        contours = part.get("Contours", [])
+        for contour in contours:
+            path_data = NestingCenterSVGCreator.getSvgContour(contour, True)
+            svg += f"<path d='{path_data}'/>"
 
-            if geometryInvalid is not None:
-                for curve in geometryInvalid:
-                    path_data = NestingCenterSVGCreator.getSvgCurve(curve, True)
-                    svg += f"<path d='{path_data}' stroke='red'/>"
+        # Process invalid geometry if provided
+        if geometryInvalid is not None:
+            for curve in geometryInvalid:
+                path_data = NestingCenterSVGCreator.getSvgCurve(curve, True)
+                svg += f"<path d='{path_data}' stroke='red'/>"
         
         svg += '</svg>'
         return svg
