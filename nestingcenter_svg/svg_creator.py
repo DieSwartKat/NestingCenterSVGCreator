@@ -32,12 +32,24 @@ class NestingCenterSVGCreator:
             vbWidth = math.ceil(part['Box']['X2']) - x1 + 2
             vbHeight = math.ceil(part['Box']['Y2']) - y1 + 2
         elif geometryInvalid and len(geometryInvalid) > 0:
-            x1 = min(curve['Data']['ControlPoints'][0]['X'] for curve in geometryInvalid) - 10
-            y1 = min(curve['Data']['ControlPoints'][0]['Y'] for curve in geometryInvalid) - 10
-            x2 = max(curve['Data']['ControlPoints'][-1]['X'] for curve in geometryInvalid) + 10
-            y2 = max(curve['Data']['ControlPoints'][-1]['Y'] for curve in geometryInvalid) + 10
-            vbWidth = x2 - x1
-            vbHeight = y2 - y1
+            all_points = []
+            for curve in geometryInvalid:
+                if 'Data' in curve and 'ControlPoints' in curve['Data']:
+                    all_points.extend(curve['Data']['ControlPoints'])
+                elif 'Data' in curve and 'Vertices' in curve['Data']:
+                    all_points.extend(curve['Data']['Vertices'])
+            
+            if all_points:
+                x_coords = [pt['X'] for pt in all_points]
+                y_coords = [pt['Y'] for pt in all_points]
+                x1 = min(x_coords) - 10
+                y1 = min(y_coords) - 10
+                x2 = max(x_coords) + 10
+                y2 = max(y_coords) + 10
+                vbWidth = x2 - x1
+                vbHeight = y2 - y1
+            else:
+                x1, y1, vbWidth, vbHeight = 0, 0, 100, 100
         else:
             raise Exception("Part must have a Box or invalid geometry to determine SVG viewBox.")
         
