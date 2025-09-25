@@ -25,10 +25,21 @@ class NestingCenterSVGCreator:
         Returns:
             Complete SVG string
         """
-        x1 = math.floor(part['Box']['X1']) - 1
-        y1 = math.floor(part['Box']['Y1']) - 1
-        vbWidth = math.ceil(part['Box']['X2']) - x1 + 2
-        vbHeight = math.ceil(part['Box']['Y2']) - y1 + 2
+        box = part.get("Box", None)
+        if box is not None:
+            x1 = math.floor(part['Box']['X1']) - 1
+            y1 = math.floor(part['Box']['Y1']) - 1
+            vbWidth = math.ceil(part['Box']['X2']) - x1 + 2
+            vbHeight = math.ceil(part['Box']['Y2']) - y1 + 2
+        elif geometryInvalid and len(geometryInvalid) > 0:
+            x1 = min(curve['Data']['ControlPoints'][0]['X'] for curve in geometryInvalid) - 10
+            y1 = min(curve['Data']['ControlPoints'][0]['Y'] for curve in geometryInvalid) - 10
+            x2 = max(curve['Data']['ControlPoints'][-1]['X'] for curve in geometryInvalid) + 10
+            y2 = max(curve['Data']['ControlPoints'][-1]['Y'] for curve in geometryInvalid) + 10
+            vbWidth = x2 - x1
+            vbHeight = y2 - y1
+        else:
+            raise Exception("Part must have a Box or invalid geometry to determine SVG viewBox.")
         
         svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x1} {y1} {vbWidth} {vbHeight}" transform="scale(1 -1)" style="stroke:black;fill:none;stroke-width:{stroke_width}">'
 
