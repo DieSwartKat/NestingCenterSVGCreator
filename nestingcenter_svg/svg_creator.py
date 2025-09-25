@@ -27,6 +27,7 @@ class NestingCenterSVGCreator:
         """
         # Determine viewBox from part Box or invalid geometry
         box = part.get("Box", None)
+        x1, y1, vbWidth, vbHeight = 0, 0, 100, 100
         if box is not None:
             x1 = math.floor(box['X1']) - 1
             y1 = math.floor(box['Y1']) - 1
@@ -50,11 +51,6 @@ class NestingCenterSVGCreator:
                 y2 = max(y_coords) + 10
                 vbWidth = x2 - x1
                 vbHeight = y2 - y1
-            else:
-                x1, y1, vbWidth, vbHeight = 0, 0, 100, 100
-        else:
-            # Default viewBox if no data available
-            x1, y1, vbWidth, vbHeight = 0, 0, 100, 100
         
         svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x1} {y1} {vbWidth} {vbHeight}" transform="scale(1 -1)" style="stroke:black;fill:none;stroke-width:{stroke_width}">'
 
