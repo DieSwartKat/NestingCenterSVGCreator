@@ -25,54 +25,53 @@ class NestingCenterSVGCreator:
         Returns:
             Complete SVG string
         """
-        # Determine viewBox from part Box or invalid geometry
         box = part.get("Box", None)
-        x1, y1, vbWidth, vbHeight = 0, 0, 100, 100
         if box is not None:
-            x1 = math.floor(box['X1']) - 1
-            y1 = math.floor(box['Y1']) - 1
-            vbWidth = math.ceil(box['X2']) - x1 + 2
-            vbHeight = math.ceil(box['Y2']) - y1 + 2
+            x1 = math.floor(part['Box']['X1']) - 1
+            y1 = math.floor(part['Box']['Y1']) - 1
+            vbWidth = math.ceil(part['Box']['X2']) - x1 + 2
+            vbHeight = math.ceil(part['Box']['Y2']) - y1 + 2
         elif geometryInvalid and len(geometryInvalid) > 0:
-            # Calculate bounding box from invalid geometry
-            all_points = []
-            for curve in geometryInvalid:
-                if 'Data' in curve and 'ControlPoints' in curve['Data']:
-                    all_points.extend(curve['Data']['ControlPoints'])
-                elif 'Data' in curve and 'Vertices' in curve['Data']:
-                    all_points.extend(curve['Data']['Vertices'])
-            
-            if all_points:
-                x_coords = [pt['X'] for pt in all_points]
-                y_coords = [pt['Y'] for pt in all_points]
-                x1 = min(x_coords) - 10
-                y1 = min(y_coords) - 10
-                x2 = max(x_coords) + 10
-                y2 = max(y_coords) + 10
-                vbWidth = x2 - x1
-                vbHeight = y2 - y1
+            min_x, max_x, min_y, max_y = NestingCenterSVGCreator.get_overall_sizes_of_invalid_geometry(geometryInvalid)
+            x1 = min_x - 10
+            y1 = min_y - 10
+            x2 = max_x + 10
+            y2 = max_y + 10
+            vbWidth = x2 - x1
+            vbHeight = y2 - y1
+        else:
+            raise Exception("Part must have a Box or invalid geometry to determine SVG viewBox.")
         
         svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x1} {y1} {vbWidth} {vbHeight}" transform="scale(1 -1)" style="stroke:black;fill:none;stroke-width:{stroke_width}">'
 
-        # Process rectangular shapes
         if part.get("RectangularShape") is not None:
             svg += NestingCenterSVGCreator.getSvgRectangle(part, False)
-        
-        # Process contours if they exist
-        contours = part.get("Contours", [])
-        for contour in contours:
-            path_data = NestingCenterSVGCreator.getSvgContour(contour, True)
-            svg += f"<path d='{path_data}'/>"
+        else:
+            if "Contours" in part:
+                for contour in part["Contours"]:
+                    path_data = NestingCenterSVGCreator.getSvgContour(contour, True)
+                    svg += f"<path d='{path_data}'/>"
 
-        # Process invalid geometry if provided
-        if geometryInvalid is not None:
-            for curve in geometryInvalid:
-                path_data = NestingCenterSVGCreator.getSvgCurve(curve, True)
-                svg += f"<path d='{path_data}' stroke='red'/>"
+            if geometryInvalid is not None:
+                for curve in geometryInvalid:
+                    path_data = NestingCenterSVGCreator.getSvgCurve(curve, True)
+                    svg += f"<path d='{path_data}' stroke='red'/>"
         
         svg += '</svg>'
         return svg
     
+    @staticmethod
+    def get_overall_sizes_of_invalid_geometry(geometryInvalid):
+        x = []
+        y = []  
+        for curve in geometryInvalid:
+            for key, value in curve['Data'].items():
+                for item in value:
+                    x.append(item.get('X', None))
+                    y.append(item.get('Y', None))
+        return min(x), max(x), min(y), max(y)
+
+
     @staticmethod
     def getSvgArc(p1: Dict[str, Any], p2: Dict[str, Any]) -> str:
         bulge = p1['B']
@@ -177,13 +176,15 @@ class NestingCenterSVGCreator:
             prev_vertex = vertices[prev_id]
             curr_vertex = vertices[i]
 
-            if "B" in prev_vertex:
+            if "B" in prev_vertex and prev_vertex != curr_vertex:
                 data += NestingCenterSVGCreator.getSvgArc(prev_vertex, curr_vertex)
             else:
                 data += " L " + NestingCenterSVGCreator.getPos(curr_vertex)
 
-        if "B" in vertices[-1]:
+        if "B" in vertices[-1] and vertices[-1] != vertices[0]:	
             data += NestingCenterSVGCreator.getSvgArc(vertices[-1], vertices[0])
+        else:
+            data += " L " + NestingCenterSVGCreator.getPos(vertices[0])
 
         if close_path:
             data += " Z"
