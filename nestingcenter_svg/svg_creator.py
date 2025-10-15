@@ -32,10 +32,11 @@ class NestingCenterSVGCreator:
             vbWidth = math.ceil(part['Box']['X2']) - x1 + 2
             vbHeight = math.ceil(part['Box']['Y2']) - y1 + 2
         elif geometryInvalid and len(geometryInvalid) > 0:
-            x1 = min(curve['Data']['ControlPoints'][0]['X'] for curve in geometryInvalid) - 10
-            y1 = min(curve['Data']['ControlPoints'][0]['Y'] for curve in geometryInvalid) - 10
-            x2 = max(curve['Data']['ControlPoints'][-1]['X'] for curve in geometryInvalid) + 10
-            y2 = max(curve['Data']['ControlPoints'][-1]['Y'] for curve in geometryInvalid) + 10
+            min_x, max_x, min_y, max_y = NestingCenterSVGCreator.get_overall_sizes_of_invalid_geometry(geometryInvalid)
+            x1 = min_x - 10
+            y1 = min_y - 10
+            x2 = max_x + 10
+            y2 = max_y + 10
             vbWidth = x2 - x1
             vbHeight = y2 - y1
         else:
@@ -46,9 +47,10 @@ class NestingCenterSVGCreator:
         if part.get("RectangularShape") is not None:
             svg += NestingCenterSVGCreator.getSvgRectangle(part, False)
         else:
-            for contour in part["Contours"]:
-                path_data = NestingCenterSVGCreator.getSvgContour(contour, True)
-                svg += f"<path d='{path_data}'/>"
+            if "Contours" in part:
+                for contour in part["Contours"]:
+                    path_data = NestingCenterSVGCreator.getSvgContour(contour, True)
+                    svg += f"<path d='{path_data}'/>"
 
             if geometryInvalid is not None:
                 for curve in geometryInvalid:
@@ -58,6 +60,17 @@ class NestingCenterSVGCreator:
         svg += '</svg>'
         return svg
     
+    @staticmethod
+    def get_overall_sizes_of_invalid_geometry(geometryInvalid):
+        x = []
+        y = []  
+        for curve in geometryInvalid:
+            for key, value in curve['Data'].items():
+                for item in value:
+                    x.append(item.get('X', None))
+                    y.append(item.get('Y', None))
+        return min(x), max(x), min(y), max(y)
+
     @staticmethod
     def getSvgArc(p1: Dict[str, Any], p2: Dict[str, Any]) -> str:
         bulge = p1['B']
@@ -162,13 +175,15 @@ class NestingCenterSVGCreator:
             prev_vertex = vertices[prev_id]
             curr_vertex = vertices[i]
 
-            if "B" in prev_vertex:
+            if "B" in prev_vertex and prev_vertex != curr_vertex:
                 data += NestingCenterSVGCreator.getSvgArc(prev_vertex, curr_vertex)
             else:
                 data += " L " + NestingCenterSVGCreator.getPos(curr_vertex)
 
-        if "B" in vertices[-1]:
+        if "B" in vertices[-1] and vertices[-1] != vertices[0]:	
             data += NestingCenterSVGCreator.getSvgArc(vertices[-1], vertices[0])
+        else:
+            data += " L " + NestingCenterSVGCreator.getPos(vertices[0])
 
         if close_path:
             data += " Z"
