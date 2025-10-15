@@ -71,6 +71,7 @@ class NestingCenterSVGCreator:
                     y.append(item.get('Y', None))
         return min(x), max(x), min(y), max(y)
 
+
     @staticmethod
     def getSvgArc(p1: Dict[str, Any], p2: Dict[str, Any]) -> str:
         bulge = p1['B']
