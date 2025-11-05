@@ -61,6 +61,32 @@ class NestingCenterSVGCreator:
         return svg
     
     @staticmethod
+    def createEmptyGeometrySvg(width: int = 300, height: int = 100, stroke_width: float = 1.0) -> str:
+        """Create SVG with text message for empty DXF geometry.
+        
+        Args:
+            width: SVG width in pixels (default: 300)
+            height: SVG height in pixels (default: 100)
+            stroke_width: Line thickness for the SVG strokes (default: 1.0)
+            
+        Returns:
+            Complete SVG string with error message
+        """
+        x1 = 0
+        y1 = 0
+        
+        # Center the text in the SVG
+        text_x = width // 2
+        text_y = height // 2
+        
+        svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x1} {y1} {width} {height}" style="stroke:black;fill:black;stroke-width:{stroke_width}">'
+        svg += f'<text x="{text_x}" y="{text_y}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="14" fill="red">'
+        svg += 'DXF profile contains no geometry'
+        svg += '</text>'
+        svg += '</svg>'
+        return svg
+    
+    @staticmethod
     def get_overall_sizes_of_invalid_geometry(geometryInvalid):
         x = []
         y = []  
