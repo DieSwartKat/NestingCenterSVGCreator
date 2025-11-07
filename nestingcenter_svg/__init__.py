@@ -3,7 +3,7 @@
 A Python library for converting Nesting Center data to SVG format.
 """
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __author__ = "Martin Cronje"
 __email__ = "martin.cronje.home@gmail.com"
 
