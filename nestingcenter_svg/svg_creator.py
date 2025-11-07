@@ -61,7 +61,7 @@ class NestingCenterSVGCreator:
         return svg
     
     @staticmethod
-    def createEmptyGeometrySvg(width: int = 300, height: int = 100, stroke_width: float = 1.0) -> str:
+    def createEmptyGeometrySvg(width: int = 300, height: int = 100, stroke_width: float = 1.0, custom_message: str = "Problem generateing SVG preview") -> str:
         """Create SVG with text message for empty DXF geometry.
         
         Args:
@@ -81,7 +81,7 @@ class NestingCenterSVGCreator:
         
         svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x1} {y1} {width} {height}" style="stroke:black;fill:black;stroke-width:{stroke_width}">'
         svg += f'<text x="{text_x}" y="{text_y}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="14" fill="red">'
-        svg += 'DXF profile contains no geometry'
+        svg += custom_message
         svg += '</text>'
         svg += '</svg>'
         return svg
