@@ -14,7 +14,7 @@ class NestingCenterSVGCreator:
     def createSvgPart(
         part: Dict[str, Any], 
         geometryInvalid: Optional[List[Dict[str, Any]]] = None, 
-        stroke_width: float = 1.0) -> str:
+        stroke_width: float = 1.5) -> str:
         """Convert a part data into svg part.
         
         Args:
@@ -42,7 +42,7 @@ class NestingCenterSVGCreator:
         else:
             raise Exception("Part must have a Box or invalid geometry to determine SVG viewBox.")
         
-        svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x1} {y1} {vbWidth} {vbHeight}" transform="scale(1 -1)" style="stroke:black;fill:none;stroke-width:{stroke_width}">'
+        svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x1} {y1} {vbWidth} {vbHeight}" transform="scale(1 -1)" style="stroke:black;fill:none;stroke-width:{stroke_width}px;vector-effect:non-scaling-stroke">'
 
         if part.get("RectangularShape") is not None:
             svg += NestingCenterSVGCreator.getSvgRectangle(part, False)
@@ -50,12 +50,12 @@ class NestingCenterSVGCreator:
             if "Contours" in part:
                 for contour in part["Contours"]:
                     path_data = NestingCenterSVGCreator.getSvgContour(contour, True)
-                    svg += f"<path d='{path_data}'/>"
+                    svg += f"<path d='{path_data}' vector-effect='non-scaling-stroke'/>"
 
             if geometryInvalid is not None:
                 for curve in geometryInvalid:
                     path_data = NestingCenterSVGCreator.getSvgCurve(curve, True)
-                    svg += f"<path d='{path_data}' stroke='red'/>"
+                    svg += f"<path d='{path_data}' stroke='red' vector-effect='non-scaling-stroke'/>"
         
         svg += '</svg>'
         return svg
